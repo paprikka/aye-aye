@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tester</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            place-content: stretch;
+        }
+
+        iframe {
+            flex: 1;
+            border: none;
+            ;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        async function init() {
+            const html = await fetch('https://sonnet.io/blog').then(res => res.text())
+
+            const frame = document.createElement('iframe');
+            frame.src = '/preview.html';
+
+            document.body.appendChild(frame);
+
+            const onHandshake = (event) => {
+                console.log({ event });
+                if (event.data === "ayeaye::ready") {
+                    frame.contentWindow.postMessage({
+                        htmlContent: html,
+                        baseURL: 'https://sonnet.io/blog'
+                    }, "*");
+                }
+            };
+            window.addEventListener("message", onHandshake);
+        }
+
+
+        init();
+
+
+
+    </script>
+
+</body>
+
+</html>
