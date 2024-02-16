@@ -123,3 +123,25 @@
     bottom: calc(0.4rem);
     right: calc(0.4rem);
 }
+
+.loadingSpinner {
+    --w: calc(1 * var(--step-1));
+
+    width: var(--w);
+    height: var(--w);
+    display: block;
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    border: 0.25rem solid var(--color-text);
+    border-radius: 1000rem;
+    border-top-color: var(--color-butter);
+    border-bottom-color: var(--color-butter);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

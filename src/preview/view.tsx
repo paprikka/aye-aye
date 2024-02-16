@@ -1,4 +1,4 @@
-import { useComputed, useSignal } from '@preact/signals'
+import { useComputed, useSignal, useSignalEffect } from '@preact/signals'
 import { render } from 'preact'
 import { useEffect } from 'preact/hooks'
 import { Button } from './button'
@@ -94,6 +94,16 @@ export const init = () => {
             )
         })
 
+        const frameLoadingState = useSignal<'loading' | 'complete' | 'idle'>(
+            'idle'
+        )
+
+        // TODO: remove, this looks shady
+        useSignalEffect(() => {
+            if (!selectedLink.value) return
+            frameLoadingState.value = 'loading'
+        })
+
         return (
             <div className={styles.container}>
                 <nav className={styles.links}>
@@ -106,22 +116,35 @@ export const init = () => {
 
                 <div className={styles.preview}>
                     {selectedLink.value ? (
-                        <iframe src={selectedLink.value.href}></iframe>
+                        <iframe
+                            onLoad={() => {
+                                frameLoadingState.value = 'complete'
+                            }}
+                            src={selectedLink.value.href}
+                        ></iframe>
                     ) : (
                         <p>Select a link to preview</p>
                     )}
 
                     {selectedLink.value && (
-                        <button
-                            className={`${styles.button} ${styles.openInNewWindowButton}`}
-                            onClick={() => {
-                                if (!selectedLink.value) return
-                                window.open(selectedLink.value.href, '_blank')
-                            }}
-                        >
-                            Open in new tab
-                        </button>
+                        <div className={styles.openInNewWindowButton}>
+                            <Button
+                                onClick={() => {
+                                    if (!selectedLink.value) return
+                                    window.open(
+                                        selectedLink.value.href,
+                                        '_blank'
+                                    )
+                                }}
+                            >
+                                Open in new tab ↗
+                            </Button>
+                        </div>
                     )}
+
+                    {frameLoadingState.value === 'loading' ? (
+                        <div className={styles.loadingSpinner} />
+                    ) : null}
                 </div>
 
                 <div className={styles.topBar}></div>
