@@ -101,6 +101,7 @@
 
 .preview {
     grid-area: preview;
+    position: relative;
 
     background-color: var(--color-butter);
     padding: 0;
@@ -161,4 +162,10 @@
 .button[disabled] {
     opacity: 0.5;
     pointer-events: none;
+}
+
+.openInNewWindowButton {
+    position: absolute;
+    top: calc(0.2rem);
+    left: calc(0.2rem);
 }

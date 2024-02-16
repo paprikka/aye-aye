@@ -17,7 +17,7 @@ const getHTMLContent = (): Promise<LinkEntry[]> =>
             (event) => {
                 resolve(linksFromDOM(event.data as PageDescription))
             },
-            { once: true }
+            { once: true },
         )
 
         window.parent.postMessage('ayeaye::ready', '*')
@@ -45,7 +45,7 @@ export const init = () => {
             if (!isShareSheetVisible.value) return ''
             return formatShareableLinks(
                 sharingFormat.value,
-                shareableLinks.value
+                shareableLinks.value,
             )
         })
 
@@ -90,6 +90,17 @@ export const init = () => {
                         <iframe src={selectedLink.value.href}></iframe>
                     ) : (
                         <p>Select a link to preview</p>
+                    )}
+
+                    {selectedLink.value && (
+                        <button
+                            className={`${styles.button} ${styles.openInNewWindowButton}`}
+                            onClick={() => {
+                                window.open(selectedLink.value.href, '_blank')
+                            }}
+                        >
+                            Open in new tab
+                        </button>
                     )}
                 </div>
 
