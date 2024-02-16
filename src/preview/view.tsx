@@ -1,14 +1,13 @@
-import { render } from 'preact'
-import { useEffect, useState } from 'preact/hooks'
-import styles from './view.module.css'
-import { linksFromDOM } from './links-from-dom'
-import { LinkEntry, PageDescription } from './types'
 import { useComputed, useSignal } from '@preact/signals'
+import { render } from 'preact'
+import { useEffect } from 'preact/hooks'
 import { Dialog } from './dialog'
 import { SharingFormat, formatShareableLinks } from './format-shareable-links'
-import { share } from './share'
-import { ShareContent } from './share-content'
+import { linksFromDOM } from './links-from-dom'
 import { QuitButton } from './quit-button'
+import { ShareContent } from './share-content'
+import { LinkEntry, PageDescription } from './types'
+import styles from './view.module.css'
 
 const getHTMLContent = (): Promise<LinkEntry[]> =>
     new Promise((resolve) => {
@@ -17,7 +16,7 @@ const getHTMLContent = (): Promise<LinkEntry[]> =>
             (event) => {
                 resolve(linksFromDOM(event.data as PageDescription))
             },
-            { once: true },
+            { once: true }
         )
 
         window.parent.postMessage('ayeaye::ready', '*')
@@ -42,7 +41,7 @@ export const init = () => {
             if (!isShareSheetVisible.value) return ''
             return formatShareableLinks(
                 sharingFormat.value,
-                shareableLinks.value,
+                shareableLinks.value
             )
         })
 
@@ -103,14 +102,19 @@ export const init = () => {
                     )}
                 </div>
 
-                <button
-                    class={styles.shareLinksButton}
-                    onClick={() => {
-                        isShareSheetVisible.value = true
-                    }}
-                >
-                    Copy {shareableLinks.value.length} links
-                </button>
+                <div className={styles.topBar}></div>
+                <div className={styles.navBar}>
+                    <button class={styles.button}>←</button>
+                    <button
+                        class={styles.button}
+                        onClick={() => {
+                            isShareSheetVisible.value = true
+                        }}
+                    >
+                        Share
+                    </button>
+                    <button class={styles.button}>→</button>
+                </div>
 
                 <Dialog title='Share' isVisible={isShareSheetVisible}>
                     <ShareContent
