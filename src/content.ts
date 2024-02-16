@@ -2,6 +2,7 @@
     const make = () => {
         const frame = document.createElement('iframe')
         frame.classList.add(`ayeaye__frame`)
+        frame.allow = 'clipboard-write'
         frame.src = chrome.runtime.getURL('preview.html')
 
         const dialogElement = document.createElement('dialog')
@@ -22,7 +23,7 @@
                         htmlContent: html,
                         baseURL: window.location.href,
                     },
-                    '*'
+                    '*',
                 )
             }
         }

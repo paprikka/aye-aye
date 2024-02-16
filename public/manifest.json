@@ -16,7 +16,8 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "declarativeNetRequestWithHostAccess"
+    "declarativeNetRequestWithHostAccess",
+    "clipboardWrite"
   ],
   "host_permissions": ["<all_urls>"],
   "icons": {
