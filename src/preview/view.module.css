@@ -138,3 +138,8 @@
 .button.isPrimary {
     --accent: var(--color-link);
 }
+
+.button[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+}

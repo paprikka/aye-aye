@@ -28,6 +28,9 @@ export const init = () => {
         useEffect(() => {
             getHTMLContent().then((newLinks) => {
                 links.value = newLinks
+                if (newLinks.length > 0) {
+                    selectedLink.value = newLinks[0]
+                }
             })
         }, [])
         const links = useSignal<LinkEntry[]>([])
@@ -48,6 +51,34 @@ export const init = () => {
 
         const isCopyToastVisible = useSignal(false)
 
+        const gotoPrev = () => {
+            const prevIndex = links.value.indexOf(selectedLink.value) - 1
+            selectedLink.value =
+                links.value[prevIndex] || links.value[links.value.length - 1]
+        }
+
+        const gotoNext = () => {
+            const nextIndex = links.value.indexOf(selectedLink.value) + 1
+            selectedLink.value = links.value[nextIndex] || links.value[0]
+        }
+
+        const canGoToNext = useComputed(() => {
+            return (
+                selectedLink.value &&
+                links.value.includes(selectedLink.value) &&
+                links.value.indexOf(selectedLink.value) !==
+                    links.value.length - 1
+            )
+        })
+
+        const canGoToPrev = useComputed(() => {
+            return (
+                selectedLink.value &&
+                links.value.includes(selectedLink.value) &&
+                links.value.indexOf(selectedLink.value) !== 0
+            )
+        })
+
         return (
             <div className={styles.container}>
                 <nav className={styles.links}>
@@ -64,7 +95,13 @@ export const init = () => {
 
                 <div className={styles.topBar}></div>
                 <div className={styles.navBar}>
-                    <button class={styles.button}>←</button>
+                    <button
+                        class={styles.button}
+                        disabled={!canGoToPrev.value}
+                        onClick={gotoPrev}
+                    >
+                        ←
+                    </button>
                     <button
                         class={styles.button}
                         onClick={() => {
@@ -73,7 +110,13 @@ export const init = () => {
                     >
                         Share
                     </button>
-                    <button class={styles.button}>→</button>
+                    <button
+                        class={styles.button}
+                        disabled={!canGoToNext.value}
+                        onClick={gotoNext}
+                    >
+                        →
+                    </button>
                 </div>
 
                 <Dialog title='Share' isVisible={isShareSheetVisible}>

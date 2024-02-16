@@ -1,6 +1,7 @@
-import { Signal } from '@preact/signals'
+import { Signal, useSignalEffect } from '@preact/signals'
 import { LinkEntry } from './types'
 import styles from './links.module.css'
+import { useEffect, useRef } from 'preact/hooks'
 
 export const Links = ({
     links,
@@ -9,18 +10,44 @@ export const Links = ({
     links: Signal<LinkEntry[]>
     selectedLink: Signal<LinkEntry | null>
 }) => {
+    const containerEl = useRef<HTMLUListElement>(null)
+
+    useSignalEffect(() => {
+        if (!containerEl.current) return
+        const index = links.value.indexOf(selectedLink.value)
+        const targetEl = containerEl.current.children[index] as HTMLElement
+        if (!targetEl) return
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
+
     return (
-        <ul className={styles.container}>
+        <ul className={styles.container} ref={containerEl}>
             {links.value.map((link) => {
                 return (
-                    <li class={link.isIgnored ? styles.linkIsIgnored : ''}>
+                    <li
+                        class={link.isIgnored ? styles.linkIsIgnored : ''}
+                        data-active={
+                            selectedLink.value === link ? true : undefined
+                        }
+                    >
                         <button
                             className={`${styles.selectLink} ${
                                 link === selectedLink.value
                                     ? styles.selectedLinkActive
                                     : ''
                             }`}
-                            onClick={() => (selectedLink.value = link)}
+                            onClick={(e) => {
+                                const elementRect =
+                                    e.currentTarget.getBoundingClientRect()
+                                const isElementAboveFold = elementRect.top < 0
+                                const isElementBelowFold =
+                                    elementRect.bottom > window.innerHeight
+
+                                if (isElementAboveFold || isElementBelowFold) {
+                                    e.currentTarget.scrollIntoView()
+                                }
+                                selectedLink.value = link
+                            }}
                         >
                             {link.text}
                         </button>
