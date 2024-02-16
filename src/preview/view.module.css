@@ -30,7 +30,7 @@
 
     display: grid;
     grid-template-columns: minmax(calc(15 * var(--step--1)), 30vw) auto;
-    grid-template-rows: min-content auto min-content;
+    grid-template-rows: min-content auto 1fr;
     grid-template-areas:
         'topbar preview'
         'links preview'
@@ -45,18 +45,25 @@
 .topBar {
     position: relative;
     grid-area: topbar;
-
+    min-height: 2rem;
     &::before {
+        mix-blend-mode: multiply;
         content: '';
         width: 10rem;
-        height: 3rem;
+        height: 6rem;
         margin-block-end: 1rem;
         display: block;
-        position: relative;
+        position: absolute;
         left: calc(-1 * var(--padding));
         background: url('./logo.png');
         background-size: contain;
         background-repeat: no-repeat;
+        translate: -50% -1.25rem;
+        transition: translate 0.2s ease;
+    }
+
+    &:hover::before {
+        translate: 0 -1.25rem;
     }
 }
 
@@ -68,6 +75,8 @@
 }
 
 .links {
+    position: relative;
+    z-index: 1;
     grid-area: links;
 
     overflow-y: auto;
