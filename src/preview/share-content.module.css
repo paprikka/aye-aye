@@ -1,19 +1,55 @@
 .container {
-  display: grid;
-  gap: 1rem;
+    display: grid;
+    gap: 1rem;
 
-  & textarea {
-    font-family: monospace;
-    line-height: 1.5;
-    min-width: 30rem;
-    height: 10rem;
-  }
+    & textarea {
+        font-family: monospace;
+        line-height: 1.5;
+        min-width: 30rem;
+        height: 10rem;
+        padding: 0.5em;
 
-  & button {
-    background: var(--color-text);
-    color: var(--color-bg);
+        border: 2px solid var(--color-text);
+
+        &:focus {
+            border-radius: 0;
+            outline: var(--color-butter) auto 5px;
+            border: 2px solid var(--color-text);
+        }
+    }
+}
+
+.button {
+    --accent: var(--color-text);
+    --bg: var(--color-butter);
+
+    appearance: none;
+    border: 2px solid var(--accent);
+    box-shadow: 4px 4px var(--accent);
+    background-color: var(--bg);
+    font-size: var(--step--1);
+    padding: 0.5em 1em;
+    font-weight: bold;
     font-family: inherit;
-    border: none;
-    padding: 0.5em 0.5em;
-  }
+
+    cursor: pointer;
+
+    &:hover {
+        translate: 2px 2px;
+        box-shadow: 2px 2px var(--accent);
+    }
+
+    &:active {
+        translate: 4px 4px;
+        box-shadow: none;
+    }
+}
+
+.button.isPrimary {
+    --accent: var(--color-link);
+}
+
+.button[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
 }
