@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tester</title>
     <style>
         * {
@@ -27,7 +27,6 @@
         iframe {
             flex: 1;
             border: none;
-            ;
         }
     </style>
 </head>
@@ -35,36 +34,40 @@
 <body>
     <script>
         async function init() {
-            const html = await fetch('https://sonnet.io/blog').then(res => res.text())
+            const testURL =
+                new URLSearchParams(window.location.search).get('url') ||
+                'https://sonnet.io/blog'
+            const html = await fetch(testURL, { method: 'GET' }).then(
+                (res) => res.text(),
+            )
 
-            const frame = document.createElement('iframe');
-            frame.src = '/preview.html';
 
-            document.body.appendChild(frame);
+            const frame = document.createElement('iframe')
+            frame.src = '/preview.html'
+
+            document.body.appendChild(frame)
 
             const onHandshake = (event) => {
-                console.log({ event });
-                if (event.data === "ayeaye::ready") {
-                    frame.contentWindow.postMessage({
-                        htmlContent: html,
-                        baseURL: 'https://sonnet.io/blog'
-                    }, "*");
+                console.log({ event })
+                if (event.data === 'ayeaye::ready') {
+                    frame.contentWindow.postMessage(
+                        {
+                            htmlContent: html,
+                            baseURL: testURL,
+                        },
+                        '*',
+                    )
                 }
 
                 if (event.data === 'ayeaye::quit') {
                     console.log(`window.close()`)
                 }
-            };
-            window.addEventListener("message", onHandshake);
+            }
+            window.addEventListener('message', onHandshake)
         }
 
-
-        init();
-
-
-
+        init()
     </script>
-
 </body>
 
 </html>

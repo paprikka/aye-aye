@@ -2,23 +2,44 @@ import { Signal, useSignalEffect } from '@preact/signals'
 import { LinkEntry } from './types'
 import styles from './links.module.css'
 import { useEffect, useRef } from 'preact/hooks'
+import { Button } from './button'
 
 export const Links = ({
     links,
     selectedLink,
+    onLoadAllLinks,
 }: {
     links: Signal<LinkEntry[]>
     selectedLink: Signal<LinkEntry | null>
+    onLoadAllLinks: () => void
 }) => {
     const containerEl = useRef<HTMLUListElement>(null)
 
     useSignalEffect(() => {
         if (!containerEl.current) return
+        if (!selectedLink.value) return
         const index = links.value.indexOf(selectedLink.value)
         const targetEl = containerEl.current.children[index] as HTMLElement
         if (!targetEl) return
         targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     })
+
+    if (links.value.length === 0) {
+        return (
+            <div class={styles.noLinksPlaceholder}>
+                <h3>No links found</h3>
+                <p>
+                    I tried to be clever and ignore potentially useless links.
+                    <br />
+                    Click the button below to load all links.
+                </p>
+                <br />
+                <Button onClick={onLoadAllLinks}>
+                    Stop being clever, load all links
+                </Button>
+            </div>
+        )
+    }
 
     return (
         <ul className={styles.container} ref={containerEl}>

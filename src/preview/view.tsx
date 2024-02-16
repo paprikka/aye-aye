@@ -1,23 +1,31 @@
 import { useComputed, useSignal } from '@preact/signals'
 import { render } from 'preact'
 import { useEffect } from 'preact/hooks'
+import { Button } from './button'
 import { Dialog } from './dialog'
 import { SharingFormat, formatShareableLinks } from './format-shareable-links'
-import { linksFromDOM } from './links-from-dom'
+import { Links } from './links'
+import { FilterID, linksFromDOM } from './links-from-dom'
 import { QuitButton } from './quit-button'
 import { ShareContent } from './share-content'
 import { LinkEntry, PageDescription } from './types'
 import styles from './view.module.css'
-import { Links } from './links'
 
-const getHTMLContent = (): Promise<LinkEntry[]> =>
+let cachedPageDescription: PageDescription | null = null
+const getHTMLContent = (filter: FilterID): Promise<LinkEntry[]> =>
     new Promise((resolve) => {
+        if (cachedPageDescription) {
+            resolve(linksFromDOM(cachedPageDescription, filter))
+            return
+        }
         window.addEventListener(
             'message',
             (event) => {
-                resolve(linksFromDOM(event.data as PageDescription))
+                // TODO: handle invalid event types
+                cachedPageDescription = event.data as PageDescription
+                resolve(linksFromDOM(cachedPageDescription, filter))
             },
-            { once: true },
+            { once: true }
         )
 
         window.parent.postMessage('ayeaye::ready', '*')
@@ -26,13 +34,18 @@ const getHTMLContent = (): Promise<LinkEntry[]> =>
 export const init = () => {
     function App() {
         useEffect(() => {
-            getHTMLContent().then((newLinks) => {
+            loadLinks('readability')
+        }, [])
+
+        const loadLinks = (filter: FilterID) => {
+            getHTMLContent(filter).then((newLinks) => {
                 links.value = newLinks
                 if (newLinks.length > 0) {
                     selectedLink.value = newLinks[0]
                 }
             })
-        }, [])
+        }
+
         const links = useSignal<LinkEntry[]>([])
         const selectedLink = useSignal<LinkEntry | null>(null)
         const shareableLinks = useComputed(() => {
@@ -45,19 +58,21 @@ export const init = () => {
             if (!isShareSheetVisible.value) return ''
             return formatShareableLinks(
                 sharingFormat.value,
-                shareableLinks.value,
+                shareableLinks.value
             )
         })
 
         const isCopyToastVisible = useSignal(false)
 
         const gotoPrev = () => {
+            if (!selectedLink.value) return
             const prevIndex = links.value.indexOf(selectedLink.value) - 1
             selectedLink.value =
                 links.value[prevIndex] || links.value[links.value.length - 1]
         }
 
         const gotoNext = () => {
+            if (!selectedLink.value) return
             const nextIndex = links.value.indexOf(selectedLink.value) + 1
             selectedLink.value = links.value[nextIndex] || links.value[0]
         }
@@ -82,7 +97,11 @@ export const init = () => {
         return (
             <div className={styles.container}>
                 <nav className={styles.links}>
-                    <Links links={links} selectedLink={selectedLink} />
+                    <Links
+                        onLoadAllLinks={() => loadLinks('allLinks')}
+                        links={links}
+                        selectedLink={selectedLink}
+                    />
                 </nav>
 
                 <div className={styles.preview}>
@@ -96,6 +115,7 @@ export const init = () => {
                         <button
                             className={`${styles.button} ${styles.openInNewWindowButton}`}
                             onClick={() => {
+                                if (!selectedLink.value) return
                                 window.open(selectedLink.value.href, '_blank')
                             }}
                         >
@@ -106,28 +126,20 @@ export const init = () => {
 
                 <div className={styles.topBar}></div>
                 <div className={styles.navBar}>
-                    <button
-                        class={styles.button}
-                        disabled={!canGoToPrev.value}
-                        onClick={gotoPrev}
-                    >
+                    <Button disabled={!canGoToPrev.value} onClick={gotoPrev}>
                         ←
-                    </button>
-                    <button
-                        class={styles.button}
+                    </Button>
+                    <Button
                         onClick={() => {
                             isShareSheetVisible.value = true
                         }}
                     >
                         Share
-                    </button>
-                    <button
-                        class={styles.button}
-                        disabled={!canGoToNext.value}
-                        onClick={gotoNext}
-                    >
+                    </Button>
+                    <Button disabled={!canGoToNext.value} onClick={gotoNext}>
                         →
-                    </button>
+                    </Button>
+                    <Button onClick={() => loadLinks('allLinks')}>?</Button>
                 </div>
 
                 <Dialog title='Share' isVisible={isShareSheetVisible}>

@@ -16,7 +16,6 @@ export const ShareContent = ({
         <div className={styles.container}>
             <textarea value={formattedShareText}></textarea>
             <button
-                autoFocus
                 className={styles.button}
                 onClick={() => {
                     isCopyToastVisible.value = true
