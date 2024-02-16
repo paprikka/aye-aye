@@ -166,6 +166,6 @@
 
 .openInNewWindowButton {
     position: absolute;
-    top: calc(0.2rem);
-    left: calc(0.2rem);
+    bottom: calc(0.4rem);
+    right: calc(0.4rem);
 }

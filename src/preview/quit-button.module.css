@@ -11,10 +11,10 @@
     background: transparent;
     cursor: pointer;
     background: var(--color-link);
-    opacity: 0.8;
+    border: 2px solid var(--color-text);
 
     &:hover {
-        opacity: 1;
+        opacity: 0.9;
     }
 
     &:active {
