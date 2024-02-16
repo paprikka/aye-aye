@@ -90,6 +90,9 @@
     overflow: hidden;
     display: flex;
 
+    border: 2px solid var(--color-text);
+    box-shadow: 4px 4px var(--color-text);
+
     & iframe {
         flex: 1;
         border: none;
@@ -114,13 +117,12 @@
 
     appearance: none;
     border: 2px solid var(--accent);
+    box-shadow: 4px 4px var(--accent);
     background-color: var(--bg);
     font-size: var(--step--1);
     padding: 0.5em 1em;
     font-weight: bold;
     font-family: inherit;
-
-    box-shadow: 4px 4px var(--accent);
 
     cursor: pointer;
 
