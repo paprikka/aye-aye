@@ -50,6 +50,10 @@
                         baseURL: 'https://sonnet.io/blog'
                     }, "*");
                 }
+
+                if (event.data === 'ayeaye::quit') {
+                    console.log(`window.close()`)
+                }
             };
             window.addEventListener("message", onHandshake);
         }
