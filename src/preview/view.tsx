@@ -8,6 +8,7 @@ import { QuitButton } from './quit-button'
 import { ShareContent } from './share-content'
 import { LinkEntry, PageDescription } from './types'
 import styles from './view.module.css'
+import { Links } from './links'
 
 const getHTMLContent = (): Promise<LinkEntry[]> =>
     new Promise((resolve) => {
@@ -50,48 +51,7 @@ export const init = () => {
         return (
             <div className={styles.container}>
                 <nav className={styles.links}>
-                    <ul>
-                        {links.value.map((link) => {
-                            return (
-                                <li
-                                    class={
-                                        link.isIgnored
-                                            ? styles.linkIsIgnored
-                                            : ''
-                                    }
-                                >
-                                    <button
-                                        className={`${styles.selectLink} ${
-                                            link === selectedLink.value
-                                                ? styles.selectedLinkActive
-                                                : ''
-                                        }`}
-                                        onClick={() =>
-                                            (selectedLink.value = link)
-                                        }
-                                    >
-                                        {link.text}
-                                    </button>
-
-                                    <input
-                                        type='checkbox'
-                                        aria-label={
-                                            link.isIgnored
-                                                ? 'Unignore this link'
-                                                : 'Ignore this link'
-                                        }
-                                        checked={!link.isIgnored}
-                                        onChange={() => {
-                                            // set the link to be ignored
-                                            link.isIgnored = !link.isIgnored
-                                            links.value = [...links.value]
-                                        }}
-                                        className={styles.ignoreLink}
-                                    />
-                                </li>
-                            )
-                        })}
-                    </ul>
+                    <Links links={links} selectedLink={selectedLink} />
                 </nav>
 
                 <div className={styles.preview}>
