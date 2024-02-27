@@ -16,8 +16,8 @@ export const Links = ({
     const containerEl = useRef<HTMLUListElement>(null)
 
     useSignalEffect(() => {
-        if (!containerEl.current) return
         if (!selectedLink.value) return
+        if (!containerEl.current) return
         const index = links.value.indexOf(selectedLink.value)
         const targetEl = containerEl.current.children[index] as HTMLElement
         if (!targetEl) return

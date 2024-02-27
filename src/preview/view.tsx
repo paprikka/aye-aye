@@ -104,6 +104,8 @@ export const init = () => {
             frameLoadingState.value = 'loading'
         })
 
+        const isHelpVisible = useSignal(false)
+
         return (
             <div className={styles.container}>
                 <nav className={styles.links}>
@@ -162,7 +164,9 @@ export const init = () => {
                     <Button disabled={!canGoToNext.value} onClick={gotoNext}>
                         →
                     </Button>
-                    <Button onClick={() => loadLinks('allLinks')}>?</Button>
+                    <Button onClick={() => (isHelpVisible.value = true)}>
+                        ?
+                    </Button>
                 </div>
 
                 <Dialog title='Share' isVisible={isShareSheetVisible}>
@@ -174,6 +178,38 @@ export const init = () => {
                 </Dialog>
 
                 <QuitButton />
+
+                <Dialog title='Help' isVisible={isHelpVisible}>
+                    <div style='max-width: 20rem'>
+                        {' '}
+                        <h3>No links found</h3>
+                        <p>
+                            I try to be clever and ignore potentially useless
+                            links. This generally works well, but in some
+                            messier sites it can cause issues.
+                            <br />
+                            Click the button below to load all links.
+                        </p>
+                        <Button onClick={() => loadLinks('allLinks')}>
+                            Stop being clever, load all links
+                        </Button>
+                        <h3>Still having issues?</h3>
+                        <a
+                            href={`mailto:hello@sonnet.io?body=${
+                                encodeURIComponent(
+                                    cachedPageDescription?.baseURL || ''
+                                ) + ' is broken.'
+                            }`}
+                        >
+                            {' '}
+                            Report a broken page
+                        </a>
+                        <br />
+                        <br />
+                        <br />
+                        {'❤️'}
+                    </div>
+                </Dialog>
             </div>
         )
     }
