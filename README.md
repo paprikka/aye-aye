@@ -3,8 +3,7 @@
 Aye-aye is a chrome extension the helps you binge on indie web webring pages.
 
 ![a possum holding a sharpie](./docs/me.jpeg)
-*(not an aye-aye, just the creature the author of this repository identifies with)
-*
+*(this **isn't** an aye-aye, just the creature the author of this repository identifies with)*
 
 # How to install?
 
