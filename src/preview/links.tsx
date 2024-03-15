@@ -7,9 +7,11 @@ import { LinkEntry } from './types'
 export const Links = ({
     links,
     selectedLink,
+    onToggleLink,
     onLoadAllLinks,
 }: {
     links: Signal<LinkEntry[]>
+    onToggleLink: (link: LinkEntry) => void
     selectedLink: Signal<LinkEntry | null>
     onLoadAllLinks: () => void
 }) => {
@@ -85,6 +87,7 @@ export const Links = ({
                                 // set the link to be ignored
                                 link.isIgnored = !link.isIgnored
                                 links.value = [...links.value]
+                                onToggleLink(link)
                             }}
                             className={styles.ignoreLink}
                         />

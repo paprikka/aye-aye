@@ -81,11 +81,6 @@ export const init = () => {
             return links.value.filter((link) => link.isIgnored)
         })
 
-        ignoredLinks.subscribe((newValue) => {
-            if (!persistence.isActive.value) return
-            persistence.save(newValue)
-        })
-
         const isShareSheetVisible = useSignal(false)
         const sharingFormat = useSignal<SharingFormat>('links')
         const formattedShareText = useComputed(() => {
@@ -145,6 +140,9 @@ export const init = () => {
                 <nav className={styles.links}>
                     <Links
                         onLoadAllLinks={() => loadLinks('allLinks')}
+                        onToggleLink={(link) => {
+                            persistence.save(ignoredLinks.value)
+                        }}
                         links={links}
                         selectedLink={selectedLink}
                     />
