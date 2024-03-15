@@ -1,8 +1,8 @@
 import { Signal, useSignalEffect } from '@preact/signals'
-import { LinkEntry } from './types'
-import styles from './links.module.css'
-import { useEffect, useRef } from 'preact/hooks'
+import { useRef } from 'preact/hooks'
 import { Button } from './button'
+import styles from './links.module.css'
+import { LinkEntry } from './types'
 
 export const Links = ({
     links,

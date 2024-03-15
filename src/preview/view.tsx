@@ -10,20 +10,34 @@ import { QuitButton } from './quit-button'
 import { ShareContent } from './share-content'
 import { LinkEntry, PageDescription } from './types'
 import styles from './view.module.css'
+import { usePersistence } from './persistence'
 
 let cachedPageDescription: PageDescription | null = null
-const getHTMLContent = (filter: FilterID): Promise<LinkEntry[]> =>
+const getHTMLContent = (
+    filter: FilterID
+): Promise<{
+    links: LinkEntry[]
+    pageURL: string
+}> =>
     new Promise((resolve) => {
         if (cachedPageDescription) {
-            resolve(linksFromDOM(cachedPageDescription, filter))
+            resolve({
+                links: linksFromDOM(cachedPageDescription, filter),
+                pageURL: cachedPageDescription.baseURL,
+            })
+
             return
         }
+
         window.addEventListener(
             'message',
             (event) => {
                 // TODO: handle invalid event types
                 cachedPageDescription = event.data as PageDescription
-                resolve(linksFromDOM(cachedPageDescription, filter))
+                resolve({
+                    links: linksFromDOM(cachedPageDescription, filter),
+                    pageURL: cachedPageDescription.baseURL,
+                })
             },
             { once: true }
         )
@@ -37,12 +51,23 @@ export const init = () => {
             loadLinks('readability')
         }, [])
 
+        const persistence = usePersistence()
+
         const loadLinks = (filter: FilterID) => {
-            getHTMLContent(filter).then((newLinks) => {
+            getHTMLContent(filter).then((content) => {
+                const newLinks = content.links
                 links.value = newLinks
-                if (newLinks.length > 0) {
-                    selectedLink.value = newLinks[0]
-                }
+
+                persistence.init(content.pageURL)
+                const ignoredLinkdIDs = persistence.load()
+
+                links.value = newLinks.map((newLink) => {
+                    if (!ignoredLinkdIDs.has(newLink.href)) return newLink
+                    return { ...newLink, isIgnored: true }
+                })
+
+                if (!newLinks.length) return
+                selectedLink.value = links.value[0]
             })
         }
 
@@ -50,6 +75,15 @@ export const init = () => {
         const selectedLink = useSignal<LinkEntry | null>(null)
         const shareableLinks = useComputed(() => {
             return links.value.filter((link) => !link.isIgnored)
+        })
+
+        const ignoredLinks = useComputed(() => {
+            return links.value.filter((link) => link.isIgnored)
+        })
+
+        ignoredLinks.subscribe((newValue) => {
+            if (!persistence.isActive.value) return
+            persistence.save(newValue)
         })
 
         const isShareSheetVisible = useSignal(false)
